@@ -15,7 +15,7 @@ train_loader, test_loader = get_dataloaders(batch_size=64)
 model = SimpleCNN()
 
 # Train baseline
-model = train(model, train_loader, epochs=3, device=device)
+model = train(model, train_loader, test_loader, epochs=3, device=device)
 
 # Evaluate baseline
 test_accuracy(model, test_loader, device=device)
