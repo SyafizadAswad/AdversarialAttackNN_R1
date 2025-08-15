@@ -17,6 +17,12 @@ model = SimpleCNN()
 # Train baseline
 model = train(model, train_loader, test_loader, epochs=3, device=device)
 
+# Save the trained model
+import os
+os.makedirs("checkpoints", exist_ok=True)
+torch.save(model.state_dict(), "checkpoints/mnist_cnn.pt")
+print("Model saved to checkpoints/mnist_cnn.pt")
+
 # Evaluate baseline
 test_accuracy(model, test_loader, device=device)
 
