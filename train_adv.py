@@ -9,7 +9,14 @@ from src.attack import pgd_attack
 from src.uti import clamp_normalized
 
 # --- Settings ---
-device = "cuda" if torch.cuda.is_available() else "cpu"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# Print device info
+if torch.cuda.is_available():
+    print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+else:
+    print("Using CPU (no GPU detected)")
+
 batch_size = 64
 epochs = 5
 epsilon = 0.3
@@ -45,7 +52,8 @@ for epoch in range(epochs):
         data, target = data.to(device), target.to(device)
 
         # Generate adversarial examples
-        data_adv = pgd_attack(model, data, target, epsilon=epsilon, step_size=step_size, num_steps=num_steps, device=device)
+        data_adv = pgd_attack(model, data, target, epsilon=epsilon, 
+                              step_size=step_size, num_steps=num_steps, device=device)
 
         # Forward + backward on adversarial examples
         optimizer.zero_grad()
@@ -60,10 +68,9 @@ for epoch in range(epochs):
         total += target.size(0)
 
     acc = correct / total
-    print(f"Epoch {epoch+1}/{epochs} - Loss: {total_loss/len(train_loader):.4f}," 
+    print(f"Epoch {epoch+1}/{epochs} - Loss: {total_loss/len(train_loader):.4f}, "
           f"Accuracy on adv examples: {acc*100:.2f}%")
     
     # --- Save model ---
     torch.save(model.state_dict(), 'checkpoints/mnist_cnn_adv.pt')
     print("Adversarially trained model saved to checkpoints/mnist_cnn_adv.pt")
-    
